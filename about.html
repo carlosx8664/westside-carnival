@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About — Westside Carnival</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,600;0,700;0,900;1,900&family=Lora:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --orange:   #F47B20;   /* dominant costume orange */
+  --teal:     #29C5C5;   /* costume teal/cyan stripes */
+  --green:    #4DC44A;   /* lime green stripes */
+  --yellow:   #FFD700;   /* afro wig yellow */
+  --pink:     #F0308A;   /* hot pink trim */
+  --red:      #E02020;   /* red accents */
+  --white:    #FFFFFF;
+  --offwhite: #FFF9F0;
+  --ink:      #1A1008;
+  --text:     #1A1008;
+  --muted:    #6B5A40;
+  --light-bg: #FFF5E8;   /* warm cream background sections */
+  --nav-h:    52px;
+  --subnav-h: 44px;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Montserrat',sans-serif;background:#fff;color:var(--text);overflow-x:hidden}
+
+/* ══ STRIPE DECORATION ══ */
+/* The costume has horizontal coloured stripes — we use this as a design motif */
+.stripe-bar{
+  height: 6px;
+  background: linear-gradient(90deg,
+    var(--orange) 0%, var(--orange) 20%,
+    var(--teal)   20%, var(--teal)   40%,
+    var(--green)  40%, var(--green)  55%,
+    var(--yellow) 55%, var(--yellow) 70%,
+    var(--pink)   70%, var(--pink)   85%,
+    var(--red)    85%, var(--red)    100%
+  );
+}
+
+/* ══ NAV ══ */
+#topnav{position:fixed;top:0;left:0;right:0;z-index:600;}
+.nav-stripe{height:5px;background:linear-gradient(90deg,var(--orange) 0%,var(--teal) 20%,var(--green) 40%,var(--yellow) 60%,var(--pink) 80%,var(--red) 100%);}
+.nav-top{display:flex;align-items:center;justify-content:space-between;height:var(--nav-h);padding:0 2rem;background:#fff;border-bottom:1px solid rgba(0,0,0,0.08);box-shadow:0 2px 12px rgba(0,0,0,0.06);}
+.nav-logo-wrap{display:flex;align-items:center;gap:0.7rem;text-decoration:none;}
+.logo-mark{width:38px;height:38px;border-radius:50%;background:var(--orange);display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:900;color:#fff;flex-shrink:0;border:3px solid var(--yellow);}
+.logo-name{font-size:1.05rem;font-weight:900;letter-spacing:0.05em;color:var(--ink);text-transform:uppercase;line-height:1.1;}
+.logo-name span{color:var(--orange);display:block;font-size:0.65rem;letter-spacing:0.14em;font-weight:600;}
+.nav-top-links{display:flex;align-items:center;gap:0;}
+.nav-top-links a{font-size:0.68rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);text-decoration:none;padding:0 0.85rem;height:var(--nav-h);display:flex;align-items:center;transition:color 0.15s;}
+.nav-top-links a:hover{color:var(--orange);}
+.nav-book-btn{background:var(--orange);color:#fff!important;font-weight:700!important;padding:0 1.4rem!important;border-radius:2px;margin-left:0.5rem;transition:background 0.15s!important;}
+.nav-book-btn:hover{background:#D4660E!important;}
+.nav-sub{height:var(--subnav-h);display:flex;align-items:stretch;background:var(--ink);overflow-x:auto;}
+.nav-sub::-webkit-scrollbar{display:none}
+.nav-sub a{font-size:0.66rem;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.52);text-decoration:none;padding:0 1.1rem;display:flex;align-items:center;white-space:nowrap;border-right:1px solid rgba(255,255,255,0.07);transition:color 0.15s,background 0.15s;}
+.nav-sub a:hover{color:var(--yellow);}
+.nav-sub a.active{color:var(--yellow);font-weight:700;}
+.nav-sub a.sub-book{margin-left:auto;background:var(--orange);color:#fff!important;font-weight:700;border-right:none;}
+.nav-sub a.sub-book:hover{background:#D4660E;}
+.nav-burger{display:none;flex-direction:column;justify-content:center;gap:5px;width:44px;height:44px;background:none;border:none;cursor:pointer;flex-shrink:0;}
+.nav-burger span{display:block;width:20px;height:2px;background:var(--ink);transition:transform 0.25s,opacity 0.25s;}
+.nav-burger.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+.nav-burger.open span:nth-child(2){opacity:0;}
+.nav-burger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+.mobile-drawer{display:none;position:fixed;top:calc(5px + var(--nav-h) + var(--subnav-h));left:0;right:0;z-index:599;background:var(--ink);flex-direction:column;}
+.mobile-drawer.open{display:flex;}
+.mobile-drawer a{padding:0.9rem 1.5rem;font-size:0.78rem;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.7);text-decoration:none;border-bottom:1px solid rgba(255,255,255,0.07);transition:color 0.15s;}
+.mobile-drawer a:hover{color:var(--yellow);}
+.mobile-drawer a.drawer-cta{background:var(--orange);color:#fff;font-weight:700;border:none;}
+
+/* ══ HERO SLIDER ══ */
+.hero{position:relative;height:100vh;min-height:580px;padding-top:calc(5px + var(--nav-h) + var(--subnav-h));overflow:hidden;background:var(--ink);}
+.slide{position:absolute;inset:0;opacity:0;transition:opacity 1s ease;display:flex;align-items:center;}
+.slide.active{opacity:1;}
+.slide-bg{position:absolute;inset:0;width:100%;height:100%;}
+.slide::after{content:'';position:absolute;inset:0;background:linear-gradient(110deg,rgba(26,16,8,0.82) 0%,rgba(26,16,8,0.5) 55%,rgba(26,16,8,0.1) 100%);}
+.slide-content{position:relative;z-index:2;max-width:680px;padding:0 4rem;}
+.slide-badge{display:inline-flex;align-items:center;gap:0.4rem;background:var(--orange);color:#fff;font-size:0.6rem;font-weight:900;letter-spacing:0.2em;text-transform:uppercase;padding:0.32rem 0.9rem;margin-bottom:1.2rem;}
+.slide-h1{font-size:clamp(2.8rem,7.5vw,6rem);font-weight:900;line-height:0.93;text-transform:uppercase;letter-spacing:-0.02em;color:#fff;margin-bottom:0.9rem;}
+.slide-h1 .c-orange{color:var(--orange);}
+.slide-h1 .c-yellow{color:var(--yellow);}
+.slide-h1 .c-teal{color:var(--teal);}
+.slide-h1 .c-green{color:var(--green);}
+.slide-sub{font-family:'Lora',serif;font-style:italic;font-size:clamp(1rem,2vw,1.25rem);color:rgba(255,255,255,0.72);margin-bottom:2rem;line-height:1.55;max-width:440px;}
+.slide-btns{display:flex;flex-wrap:wrap;gap:0.6rem;}
+.btn-orange{display:inline-block;background:var(--orange);color:#fff;text-decoration:none;font-size:0.75rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:0.88rem 2rem;transition:background 0.15s;border-radius:2px;}
+.btn-orange:hover{background:#D4660E;}
+.btn-teal{display:inline-block;background:var(--teal);color:#fff;text-decoration:none;font-size:0.75rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:0.88rem 1.8rem;transition:background 0.15s;border-radius:2px;}
+.btn-teal:hover{background:#22AAAA;}
+.slider-dots{position:absolute;bottom:1.5rem;left:50%;transform:translateX(-50%);z-index:10;display:flex;gap:0.5rem;}
+.dot{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,0.3);border:none;cursor:pointer;padding:0;transition:background 0.2s;}
+.dot.active{background:var(--yellow);}
+.slider-arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:10;background:rgba(244,123,32,0.75);border:none;color:#fff;width:46px;height:46px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1.2rem;transition:background 0.15s;border-radius:2px;}
+.slider-arrow:hover{background:var(--orange);}
+.arrow-prev{left:1.5rem;} .arrow-next{right:1.5rem;}
+
+/* ══ COUNTDOWN ══ */
+.countdown-bar{background:var(--orange);padding:1.2rem 2rem;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:1rem;}
+.countdown-label{font-size:0.68rem;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:rgba(255,255,255,0.85);}
+.countdown-units{display:flex;gap:0.3rem;align-items:center;}
+.cd-unit{text-align:center;min-width:56px;}
+.cd-num{font-size:2.2rem;font-weight:900;color:#fff;line-height:1;display:block;}
+.cd-lbl{font-size:0.55rem;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.7);}
+.cd-sep{font-size:1.8rem;font-weight:900;color:rgba(255,255,255,0.5);margin-bottom:1rem;}
+
+/* ══ EVENT BAND ══ */
+.event-band{background:var(--ink);padding:0.85rem 2rem;display:flex;align-items:center;justify-content:center;gap:2rem;flex-wrap:wrap;}
+.event-band-item{font-size:0.72rem;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.5);}
+.event-band-item strong{color:var(--yellow);font-weight:700;}
+.event-band-sep{color:rgba(255,255,255,0.15);}
+
+/* ══ SECTION SHARED ══ */
+.sw{max-width:1200px;margin:0 auto;padding:0 2rem;}
+.sh{text-align:center;padding:4rem 0 2.5rem;}
+.sk{font-size:0.63rem;font-weight:700;letter-spacing:0.22em;text-transform:uppercase;color:var(--teal);display:block;margin-bottom:0.5rem;}
+.st{font-size:clamp(1.8rem,4vw,2.8rem);font-weight:900;text-transform:uppercase;color:var(--ink);letter-spacing:-0.01em;line-height:1.1;}
+.st em{font-style:normal;color:var(--orange);}
+hr.rule{border:none;border-top:4px solid var(--orange);width:50px;margin:0.9rem auto 0;}
+.ss{font-family:'Lora',serif;font-style:italic;font-size:1.02rem;color:var(--muted);margin-top:0.8rem;max-width:580px;margin-inline:auto;line-height:1.65;}
+
+/* ══ JOIN CARDS ══ */
+.join-section{background:#fff;padding-bottom:5rem;}
+.join-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.2rem;max-width:1300px;margin:0 auto;padding:0 2rem;}
+.join-card{position:relative;overflow:hidden;border-radius:6px;text-decoration:none;display:block;aspect-ratio:0.85;background:var(--ink);}
+.join-card-bg{position:absolute;inset:0;width:100%;height:100%;}
+.join-card::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(26,16,8,0.96) 0%,rgba(26,16,8,0.25) 55%,transparent 100%);transition:opacity 0.3s;}
+.join-card:hover::after{opacity:0.65;}
+.jc-badge{position:absolute;top:1rem;left:1rem;z-index:3;font-size:0.58rem;font-weight:900;letter-spacing:0.14em;text-transform:uppercase;padding:0.3rem 0.8rem;}
+.join-card-body{position:absolute;bottom:0;left:0;right:0;padding:2rem 1.5rem;z-index:2;}
+.jc-title{font-size:1.35rem;font-weight:900;text-transform:uppercase;color:#fff;margin-bottom:0.5rem;line-height:1.1;letter-spacing:0.02em;}
+.jc-facts{list-style:none;font-size:0.75rem;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:rgba(255,255,255,0.6);}
+.jc-facts li{margin-bottom:0.2rem;}
+.jc-facts li::before{content:'— ';color:var(--yellow);}
+
+/* ══ ABOUT ══ */
+.about-section{background:var(--light-bg);padding:5rem 2rem;}
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:5rem;max-width:1200px;margin:0 auto;align-items:center;}
+.about-img{width:100%;aspect-ratio:1;overflow:hidden;border-radius:8px;position:relative;}
+.about-text .sk{text-align:left;}
+.about-text .st{text-align:left;font-size:clamp(1.8rem,3.5vw,2.6rem);}
+.about-text hr.rule{margin-left:0;}
+.body-p{font-family:'Lora',serif;font-size:1.02rem;line-height:1.82;color:#3A2A18;}
+.body-p+.body-p{margin-top:0.9rem;}
+.about-link{display:inline-flex;align-items:center;gap:0.4rem;margin-top:1.5rem;color:var(--orange);font-size:0.75rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;text-decoration:none;border-bottom:2px solid var(--orange);padding-bottom:2px;transition:opacity 0.15s;}
+.about-link:hover{opacity:0.7;}
+
+/* ══ FACTS ══ */
+.facts-section{background:var(--ink);padding:4.5rem 2rem;text-align:center;}
+.facts-section .st{color:#fff;}
+.facts-section .sk{color:var(--teal);}
+.facts-section hr.rule{border-color:var(--yellow);}
+.facts-row{display:flex;justify-content:center;flex-wrap:wrap;max-width:900px;margin:3rem auto 0;border-top:1px solid rgba(255,255,255,0.08);border-bottom:1px solid rgba(255,255,255,0.08);}
+.fact{padding:2rem 3rem;border-right:1px solid rgba(255,255,255,0.08);flex:1;min-width:160px;}
+.fact:last-child{border-right:none;}
+.fact-num{font-size:2.8rem;font-weight:900;line-height:1;}
+.fact-label{font-size:0.62rem;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-top:0.35rem;}
+
+/* ══ GALLERY ══ */
+.gallery-head{background:#fff;padding:4rem 2rem 2rem;}
+.gallery-strip{display:flex;overflow-x:auto;}
+.gallery-strip::-webkit-scrollbar{height:4px;}
+.gallery-strip::-webkit-scrollbar-track{background:#F0EAE0;}
+.gallery-strip::-webkit-scrollbar-thumb{background:var(--orange);}
+.g-item{flex:0 0 260px;height:320px;position:relative;overflow:hidden;cursor:pointer;border-right:1px solid #EEE;}
+.g-item svg{width:100%;height:100%;display:block;}
+.g-item::after{content:'';position:absolute;inset:0;background:rgba(244,123,32,0);transition:background 0.25s;}
+.g-item:hover::after{background:rgba(244,123,32,0.2);}
+
+/* ══ HOW TO BOOK ══ */
+.how-section{background:var(--light-bg);padding:5rem 2rem;}
+.how-grid{display:grid;grid-template-columns:repeat(4,1fr);max-width:1200px;margin:2rem auto 0;border:2px solid #FFD9B8;}
+.how-step{padding:2.5rem 2rem;border-right:2px solid #FFD9B8;transition:background 0.15s;}
+.how-step:last-child{border-right:none;}
+.how-step:hover{background:#FFF0DC;}
+.how-num{font-size:2.8rem;font-weight:900;color:var(--orange);line-height:1;margin-bottom:1rem;}
+.how-title{font-size:0.85rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--ink);margin-bottom:0.6rem;}
+.how-desc{font-size:0.86rem;color:var(--muted);line-height:1.65;}
+
+/* ══ PACKAGES ══ */
+.pkg-section{background:#fff;padding:5rem 2rem;}
+.pkg-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;max-width:1200px;margin:2.5rem auto 0;}
+.pkg-card{background:#fff;border-radius:6px;overflow:hidden;box-shadow:0 2px 16px rgba(244,123,32,0.1);display:flex;flex-direction:column;transition:transform 0.2s,box-shadow 0.2s;border:1.5px solid #FFD9B8;}
+.pkg-card:hover{transform:translateY(-5px);box-shadow:0 12px 40px rgba(244,123,32,0.2);}
+.pkg-card.featured{border:2.5px solid var(--orange);}
+.pkg-top{height:190px;position:relative;overflow:hidden;display:flex;align-items:flex-start;}
+.pkg-top svg{position:absolute;inset:0;width:100%;height:100%;}
+.pkg-badge{position:relative;z-index:2;font-size:0.6rem;font-weight:900;letter-spacing:0.14em;text-transform:uppercase;padding:0.3rem 0.85rem;margin:0.9rem;}
+.pkg-body{padding:1.5rem;flex:1;display:flex;flex-direction:column;}
+.pkg-tier{font-size:0.6rem;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:var(--teal);margin-bottom:0.35rem;}
+.pkg-name{font-size:1.3rem;font-weight:900;text-transform:uppercase;color:var(--ink);margin-bottom:0.4rem;letter-spacing:0.02em;}
+.pkg-desc{font-size:0.84rem;color:var(--muted);line-height:1.6;margin-bottom:1.1rem;}
+.pkg-features{list-style:none;flex:1;margin-bottom:1.5rem;}
+.pkg-features li{font-size:0.82rem;color:var(--text);padding:0.42rem 0;border-bottom:1px solid #FFF0DC;display:flex;gap:0.5rem;align-items:flex-start;}
+.pkg-features li::before{content:'✓';color:var(--green);font-weight:900;flex-shrink:0;}
+.pkg-cta{display:block;text-align:center;text-decoration:none;padding:0.8rem;font-size:0.7rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;background:var(--ink);color:#fff;transition:background 0.15s;border-radius:2px;}
+.pkg-cta:hover{background:var(--orange);}
+.pkg-card.featured .pkg-cta{background:var(--orange);}
+.pkg-card.featured .pkg-cta:hover{background:#D4660E;}
+
+/* ══ CTA BAND ══ */
+.cta-band{position:relative;overflow:hidden;min-height:340px;display:flex;align-items:center;background:var(--ink);}
+.cta-band-bg{position:absolute;inset:0;width:100%;height:100%;}
+.cta-band::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(26,16,8,0.92) 0%,rgba(26,16,8,0.6) 60%,rgba(26,16,8,0.15) 100%);}
+.cta-content{position:relative;z-index:2;max-width:560px;padding:4rem 3rem;}
+.cta-title{font-size:clamp(1.8rem,4vw,2.8rem);font-weight:900;text-transform:uppercase;color:#fff;line-height:1.1;margin-bottom:1rem;}
+.cta-title span{color:var(--yellow);}
+.cta-body{font-family:'Lora',serif;font-size:1rem;font-style:italic;color:rgba(255,255,255,0.68);line-height:1.7;margin-bottom:1.5rem;}
+.btn-outline-yellow{display:inline-block;background:transparent;color:var(--yellow);text-decoration:none;font-size:0.75rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;padding:0.88rem 1.8rem;border:2px solid var(--yellow);margin-left:0.6rem;transition:background 0.15s,color 0.15s;border-radius:2px;}
+.btn-outline-yellow:hover{background:var(--yellow);color:var(--ink);}
+
+/* ══ CONTACT ══ */
+.contact-section{background:var(--light-bg);padding:5rem 2rem;}
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:4rem;max-width:1200px;margin:2.5rem auto 0;align-items:start;}
+.contact-panel{background:var(--ink);padding:2.5rem;border-radius:4px;}
+.contact-channel{display:flex;align-items:center;gap:1rem;padding:1rem;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);text-decoration:none;margin-bottom:0.9rem;transition:background 0.15s;border-radius:3px;}
+.contact-channel:hover{background:rgba(244,123,32,0.15);}
+.ch-dot{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;}
+.ch-dot.wa{background:#25D366;}
+.ch-dot.ph{background:var(--orange);}
+.ch-lbl{font-size:0.58rem;letter-spacing:0.18em;text-transform:uppercase;color:rgba(255,255,255,0.35);}
+.ch-val{font-size:0.92rem;font-weight:700;color:#fff;margin-top:0.1rem;}
+.contact-note{font-size:0.78rem;color:rgba(255,255,255,0.38);font-style:italic;line-height:1.65;margin-top:1rem;}
+.form-wrap h3{font-size:1.15rem;font-weight:900;text-transform:uppercase;color:var(--ink);margin-bottom:1.5rem;letter-spacing:0.04em;}
+.ff{margin-bottom:1rem;}
+.ff label{display:block;font-size:0.6rem;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:var(--muted);margin-bottom:0.4rem;}
+.ff input,.ff select,.ff textarea{width:100%;padding:0.7rem 0.9rem;border:1.5px solid #FFD9B8;background:#fff;color:var(--text);font-family:'Montserrat',sans-serif;font-size:0.88rem;outline:none;border-radius:3px;transition:border-color 0.15s;-webkit-appearance:none;}
+.ff input:focus,.ff select:focus,.ff textarea:focus{border-color:var(--orange);}
+.ff textarea{min-height:80px;resize:vertical;}
+.ff-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+.btn-submit{width:100%;padding:0.9rem;background:var(--orange);color:#fff;border:none;cursor:pointer;font-family:'Montserrat',sans-serif;font-size:0.72rem;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;transition:background 0.15s;border-radius:3px;margin-top:0.3rem;}
+.btn-submit:hover{background:#D4660E;}
+.form-micro{font-size:0.7rem;color:var(--muted);margin-top:0.6rem;}
+
+/* ══ FOOTER ══ */
+footer{background:var(--ink);}
+.foot-stripe{height:5px;background:linear-gradient(90deg,var(--orange) 0%,var(--teal) 20%,var(--green) 40%,var(--yellow) 60%,var(--pink) 80%,var(--red) 100%);}
+.foot-top{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:3rem;max-width:1200px;margin:0 auto;padding:3.5rem 2rem;border-bottom:1px solid rgba(255,255,255,0.08);}
+.foot-brand{font-size:1.15rem;font-weight:900;color:var(--orange);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.4rem;}
+.foot-tagline{font-size:0.78rem;color:rgba(255,255,255,0.38);line-height:1.6;}
+.foot-col-title{font-size:0.58rem;font-weight:700;letter-spacing:0.22em;text-transform:uppercase;color:rgba(255,255,255,0.28);margin-bottom:0.9rem;}
+.foot-col ul{list-style:none;}
+.foot-col li{margin-bottom:0.45rem;}
+.foot-col a{font-size:0.84rem;color:rgba(255,255,255,0.45);text-decoration:none;transition:color 0.15s;}
+.foot-col a:hover{color:var(--orange);}
+.foot-bottom{max-width:1200px;margin:0 auto;padding:1.2rem 2rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;}
+.foot-copy{font-size:0.7rem;color:rgba(255,255,255,0.2);}
+.foot-links{display:flex;gap:1.5rem;}
+.foot-links a{font-size:0.7rem;color:rgba(255,255,255,0.22);text-decoration:none;transition:color 0.15s;}
+.foot-links a:hover{color:rgba(255,255,255,0.5);}
+
+/* ══ WA FAB ══ */
+.wa-fab{position:fixed;bottom:1.5rem;right:1.5rem;z-index:400;background:#25D366;color:#fff;text-decoration:none;display:flex;align-items:center;gap:0.5rem;padding:0.7rem 1.2rem;border-radius:50px;font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;box-shadow:0 4px 20px rgba(37,211,102,0.45);transition:transform 0.15s,box-shadow 0.15s;}
+.wa-fab:hover{transform:translateY(-2px);box-shadow:0 6px 28px rgba(37,211,102,0.55);}
+
+/* ══ RESPONSIVE ══ */
+@media(max-width:960px){
+  .nav-top-links,.nav-sub{display:none;}
+  .nav-burger{display:flex;}
+  .hero .slide-content{padding:0 1.5rem;}
+  .join-grid{grid-template-columns:1fr 1fr;max-width:100%;}
+  .join-card{aspect-ratio:1.1;}
+  .about-grid{grid-template-columns:1fr;gap:2.5rem;}
+  .facts-row{flex-direction:column;}
+  .fact{border-right:none;border-bottom:1px solid rgba(255,255,255,0.08);padding:1.5rem 2rem;}
+  .fact:last-child{border-bottom:none;}
+  .how-grid{grid-template-columns:1fr 1fr;}
+  .how-step:nth-child(2){border-right:none;}
+  .how-step:nth-child(3){border-top:2px solid #FFD9B8;border-right:2px solid #FFD9B8;}
+  .how-step:nth-child(4){border-top:2px solid #FFD9B8;}
+  .pkg-grid{grid-template-columns:1fr;}
+  .g-item{flex:0 0 210px;height:260px;}
+  .contact-grid{grid-template-columns:1fr;}
+  .foot-top{grid-template-columns:1fr 1fr;gap:2rem;}
+  .ff-row{grid-template-columns:1fr;}
+  .cta-content{padding:3rem 1.5rem;}
+  .wa-fab .wa-lbl{display:none;}
+  .wa-fab{padding:0.9rem;width:50px;height:50px;justify-content:center;border-radius:50%;}
+}
+@media(max-width:520px){
+  .how-grid{grid-template-columns:1fr;}
+  .how-step{border-right:none;border-bottom:2px solid #FFD9B8;}
+  .how-step:last-child{border-bottom:none;}
+  .foot-top{grid-template-columns:1fr;}
+  .join-grid{max-width:100%;}
+}
+</style>
+</head>
+<body>
+<div id="topnav">
+  <div class="nav-stripe"></div>
+  <div class="nav-top">
+    <a href="index.html" class="nav-logo-wrap">
+      <div class="logo-mark">W</div>
+      <div class="logo-name">Westside Carnival<span>Takoradi, Ghana</span></div>
+    </a>
+    <div style="display:flex;align-items:center">
+      <div class="nav-top-links">
+        <a href="about.html">About</a>
+        <a href="gallery.html">Gallery</a>
+        <a href="contact.html">Contact</a>
+        <a href="https://wa.me/233000000000" target="_blank" class="nav-top-links a nav-book-btn" style="display:flex;align-items:center;height:var(--nav-h);padding:0 1.4rem;margin-left:0.5rem;background:var(--orange);color:#fff;font-size:0.68rem;letter-spacing:0.1em;text-transform:uppercase;font-weight:700;text-decoration:none;border-radius:2px;transition:background 0.15s">Book Now</a>
+      </div>
+      <button class="nav-burger" id="burger"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+  <div class="nav-sub">
+    <a href="index.html" id="nl-home">Home</a>
+    <a href="events.html" id="nl-events">Events</a>
+    <a href="accommodation.html" id="nl-acc">Accommodation</a>
+    <a href="booking.html" id="nl-book">How to Book</a>
+    <a href="gallery.html" id="nl-gallery">Gallery</a>
+    <a href="about.html" id="nl-about" class="active">About</a>
+    <a href="contact.html" id="nl-contact">Contact</a>
+    <a href="https://wa.me/233000000000" target="_blank" class="sub-book">Book via WhatsApp</a>
+  </div>
+</div>
+<div class="mobile-drawer" id="drawer">
+  <a href="index.html" onclick="closeDrawer()">Home</a>
+  <a href="events.html" onclick="closeDrawer()">Events</a>
+  <a href="accommodation.html" onclick="closeDrawer()">Accommodation</a>
+  <a href="booking.html" onclick="closeDrawer()">How to Book</a>
+  <a href="gallery.html" onclick="closeDrawer()">Gallery</a>
+  <a href="about.html" onclick="closeDrawer()">About</a>
+  <a href="contact.html" onclick="closeDrawer()">Contact</a>
+  <a href="https://wa.me/233000000000" target="_blank" class="drawer-cta">Book Now on WhatsApp</a>
+</div>
+<div style="height:calc(5px + var(--nav-h) + var(--subnav-h))"></div>
+<section class="about-section" id="about">
+  <div class="about-grid">
+    <div class="about-img">
+      <svg width="100%" height="100%" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+        <rect width="500" height="500" fill="#1A0808"/>
+        <!-- Kente-style borders in costume colours -->
+        <rect x="0" y="0" width="500" height="18" fill="#F47B20" opacity="0.85"/>
+        <rect x="0" y="18" width="500" height="10" fill="#29C5C5" opacity="0.85"/>
+        <rect x="0" y="28" width="500" height="8" fill="#4DC44A" opacity="0.85"/>
+        <rect x="0" y="474" width="500" height="8" fill="#4DC44A" opacity="0.85"/>
+        <rect x="0" y="482" width="500" height="10" fill="#29C5C5" opacity="0.85"/>
+        <rect x="0" y="492" width="500" height="8" fill="#F47B20" opacity="0.85"/>
+        <rect x="0" y="0" width="18" height="500" fill="#F47B20" opacity="0.85"/>
+        <rect x="18" y="0" width="10" height="500" fill="#29C5C5" opacity="0.85"/>
+        <rect x="472" y="0" width="10" height="500" fill="#29C5C5" opacity="0.85"/>
+        <rect x="482" y="0" width="18" height="500" fill="#F47B20" opacity="0.85"/>
+        <!-- Two costumed dancers central -->
+        <g transform="translate(155,310)">
+          <ellipse cx="0" cy="-30" rx="58" ry="52" fill="#FFD700" opacity="0.95"/>
+          <ellipse cx="0" cy="55" rx="40" ry="46" fill="#3A1A08"/>
+          <ellipse cx="0" cy="185" rx="80" ry="100" fill="#F47B20" opacity="0.92"/>
+          <rect x="-80" y="110" width="160" height="18" rx="2" fill="#29C5C5" opacity="0.9"/>
+          <rect x="-80" y="134" width="160" height="14" rx="2" fill="#4DC44A" opacity="0.88"/>
+          <rect x="-80" y="154" width="160" height="14" rx="2" fill="#fff" opacity="0.7"/>
+          <rect x="-80" y="174" width="160" height="14" rx="2" fill="#F0308A" opacity="0.82"/>
+          <rect x="-80" y="194" width="160" height="14" rx="2" fill="#29C5C5" opacity="0.85"/>
+          <line x1="-80" y1="138" x2="-130" y2="170" stroke="#F47B20" stroke-width="22" stroke-linecap="round"/>
+          <line x1="80" y1="138" x2="125" y2="162" stroke="#F47B20" stroke-width="22" stroke-linecap="round"/>
+        </g>
+        <g transform="translate(340,320)">
+          <ellipse cx="0" cy="-30" rx="52" ry="46" fill="#FFD700" opacity="0.9"/>
+          <ellipse cx="0" cy="50" rx="36" ry="40" fill="#3A1A08"/>
+          <ellipse cx="0" cy="175" rx="70" ry="90" fill="#29C5C5" opacity="0.9"/>
+          <rect x="-70" y="105" width="140" height="16" rx="2" fill="#F47B20" opacity="0.9"/>
+          <rect x="-70" y="127" width="140" height="14" rx="2" fill="#4DC44A" opacity="0.86"/>
+          <rect x="-70" y="147" width="140" height="14" rx="2" fill="#fff" opacity="0.68"/>
+          <rect x="-70" y="167" width="140" height="14" rx="2" fill="#F0308A" opacity="0.8"/>
+          <line x1="-70" y1="128" x2="-112" y2="157" stroke="#29C5C5" stroke-width="20" stroke-linecap="round"/>
+          <line x1="70" y1="128" x2="108" y2="150" stroke="#29C5C5" stroke-width="20" stroke-linecap="round"/>
+        </g>
+        <!-- Ghost "20+" -->
+        <text x="250" y="290" text-anchor="middle" font-family="sans-serif" font-size="110" font-weight="900" fill="#F47B20" opacity="0.05">20+</text>
+        <text x="250" y="462" text-anchor="middle" font-family="sans-serif" font-size="11" font-weight="700" fill="rgba(244,123,32,0.35)" letter-spacing="5">YEARS OF WESTSIDE CARNIVAL</text>
+      </svg>
+    </div>
+    <div class="about-text">
+      <span class="sk">Est. 20+ Years · Takoradi</span>
+      <h2 class="st">More Than<br>a <em>Carnival</em></h2>
+      <hr class="rule" style="margin-left:0">
+      <p class="body-p" style="margin-top:1.5rem">The Westside Carnival — also known as the Ankos or Fancy Dress Carnival — is Takoradi's annual Christmas street festival. Held every December 24–26, it draws over 250,000 attendees to Liberation Road and the Central Business District.</p>
+      <p class="body-p">Featuring masquerade troupes in vibrant multicoloured costumes, brass bands playing highlife, acrobatic performances, and samba processions — it is the beating heart of the Western Region. Organised by Skyy Media Group and Skyy Power FM, with MTN as headline sponsor, the carnival brings together Ghana's best musicians, masquerade groups, food vendors, and entertainers. Our hospitality team ensures every out-of-town guest stays comfortably and celebrates fully.</p>
+      <a href="accommodation.html" class="about-link">Book Accommodation →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FACTS ══ -->
+<div class="facts-section">
+  <div class="sw"><div class="sh">
+    <span class="sk">By the Numbers</span>
+    <h2 class="st" style="color:#fff">The Scale of <em>Westside</em></h2>
+    <hr class="rule">
+  </div></div>
+  <div class="facts-row">
+    <div class="fact"><div class="fact-num" style="color:var(--orange)">250K+</div><div class="fact-label">Attendees per year</div></div>
+    <div class="fact"><div class="fact-num" style="color:var(--teal)">20+</div><div class="fact-label">Years running</div></div>
+    <div class="fact"><div class="fact-num" style="color:var(--green)">5</div><div class="fact-label">Masquerade groups</div></div>
+    <div class="fact"><div class="fact-num" style="color:var(--yellow)">3</div><div class="fact-label">Days of festivities</div></div>
+  </div>
+</div>
+<footer>
+  <div class="foot-stripe"></div>
+  <div class="foot-top">
+    <div class="foot-col">
+      <p class="foot-brand">Westside Carnival</p>
+      <p class="foot-tagline">Official Hospitality &amp; Accommodation<br>Market Circle, Liberation Road, Takoradi<br>Western Region, Ghana</p>
+    </div>
+    <div class="foot-col">
+      <p class="foot-col-title">Explore</p>
+      <ul><li><a href="events.html">Events</a></li><li><a href="gallery.html">Gallery</a></li><li><a href="about.html">About</a></li></ul>
+    </div>
+    <div class="foot-col">
+      <p class="foot-col-title">Accommodation</p>
+      <ul><li><a href="accommodation.html">Standard Stay</a></li><li><a href="accommodation.html">Carnival Classic</a></li><li><a href="accommodation.html">VIP Experience</a></li><li><a href="booking.html">How to Book</a></li></ul>
+    </div>
+    <div class="foot-col">
+      <p class="foot-col-title">Contact</p>
+      <ul><li><a href="https://wa.me/233000000000" target="_blank">WhatsApp</a></li><li><a href="tel:+233000000000">+233 000 000 000</a></li><li><a href="contact.html">Send Enquiry</a></li></ul>
+    </div>
+  </div>
+  <div class="foot-bottom">
+    <p class="foot-copy">&copy; 2026 Westside Carnival. All rights reserved.</p>
+    <div class="foot-links"><a href="#">Privacy Policy</a><a href="#">Terms</a></div>
+  </div>
+</footer>
+<a href="https://wa.me/233000000000?text=Hello!%20I'd%20like%20to%20book%20accommodation%20for%20Westside%20Carnival." class="wa-fab" target="_blank">
+  <span style="font-size:1.1rem">📱</span>
+  <span class="wa-lbl">Book on WhatsApp</span>
+</a>
+<script>
+const burger=document.getElementById('burger'),drawer=document.getElementById('drawer');
+burger.addEventListener('click',()=>{burger.classList.toggle('open');drawer.classList.toggle('open');});
+function closeDrawer(){burger.classList.remove('open');drawer.classList.remove('open');}
+</script>
+</body>
+</html>
