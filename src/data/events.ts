@@ -6,11 +6,12 @@ export interface CarnivalEvent {
   venue: string
   description: string
   badge: string
-  badgeBg?: string;
   badgeColor: string
+  badgeBg: string
   image: string
   facts: string[]
 }
+
 
 export interface Package {
   id: string
@@ -26,9 +27,12 @@ export interface Package {
   waMessage: string
 }
 
+
 export const CARNIVAL_DATE = new Date('2026-12-24T06:00:00')
 
+
 export const WHATSAPP_NUMBER = '233000000000'
+
 
 export const carnivalEvents: CarnivalEvent[] = [
   {
@@ -84,6 +88,7 @@ export const carnivalEvents: CarnivalEvent[] = [
     facts: ['5 masquerade groups', 'Liberation Road', 'The main event!'],
   },
 ]
+
 
 export const packages: Package[] = [
   {
@@ -144,6 +149,7 @@ export const packages: Package[] = [
   },
 ]
 
+
 export const galleryImages = [
   { src: 'parade',   alt: 'Masqueraders Parade at night' },
   { src: 'costume',  alt: 'Carnival costume performer' },
@@ -152,12 +158,14 @@ export const galleryImages = [
   { src: 'poster25', alt: 'Westside Carnival 2025 poster' },
 ]
 
+
 export const stats = [
   { num: '250K+', label: 'Attendees per year' },
   { num: '20+',   label: 'Years running' },
   { num: '5',     label: 'Masquerade groups' },
   { num: '3',     label: 'Days of festivities' },
 ]
+
 
 export const sponsors = [
   'MTN', 'HnH', 'OmniBSIC Bank', 'Bell Group', 'Tasty Tom',
