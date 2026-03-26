@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import SectionHeader from '@/components/SectionHeader'
+// import SectionHeader from '@/components/SectionHeader'
 import { buildWaLink, } from '@/lib/utils'
 import { WHATSAPP_NUMBER } from '@/data/events'
 
