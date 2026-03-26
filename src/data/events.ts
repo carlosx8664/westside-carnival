@@ -7,7 +7,6 @@ export interface CarnivalEvent {
   description: string
   badge: string
   badgeColor: string
-  badgeBg: string
   image: string
   facts: string[]
 }
