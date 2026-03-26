@@ -6,6 +6,7 @@ export interface CarnivalEvent {
   venue: string
   description: string
   badge: string
+  badgeBg?: string;
   badgeColor: string
   image: string
   facts: string[]
