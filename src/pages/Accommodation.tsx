@@ -5,8 +5,22 @@ import SectionHeader from '@/components/SectionHeader'
 import { client } from '@/lib/sanityClient'
 import { PACKAGES_QUERY, SITE_SETTINGS_QUERY } from '@/lib/queries'
 
+interface SanityPackage {
+  _id: string
+  name: string
+  tier: string
+  price: number
+  description: string
+  features?: string[]
+  featured?: boolean
+  badge?: string
+  badgeColor?: string
+  badgeBg?: string
+  waMessage?: string
+}
+
 export default function Accommodation() {
-  const [packages, setPackages] = useState<any[]>([])
+  const [packages, setPackages] = useState<SanityPackage[]>([])
   const [settings, setSettings] = useState<any>(null)
   const [loading, setLoading] = useState(true)
 
@@ -52,6 +66,10 @@ export default function Accommodation() {
                   features: pkg.features ?? [],
                   featured: pkg.featured ?? false,
                   whatsapp: settings?.whatsappNumber ?? '233000000000',
+                  badge: pkg.badge ?? pkg.tier,
+                  badgeColor: pkg.badgeColor ?? '#fff',
+                  badgeBg: pkg.badgeBg ?? (pkg.featured ? '#F47B20' : '#29C5C5'),
+                  waMessage: pkg.waMessage ?? `Hi! I'd like to enquire about the ${pkg.name} package for Westside Carnival.`,
                 }}
               />
             ))}
