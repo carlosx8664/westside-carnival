@@ -1,26 +1,52 @@
-import { CarnivalEvent } from '@/data/events'
-import { getImageUrl } from '@/lib/utils'
+import React from 'react'
+
+interface EventProp {
+  id: string
+  title: string
+  day?: string
+  venue?: string
+  description?: string
+  tag?: string
+  image?: string
+  // legacy fields — optional so old data doesn't break
+  facts?: string[]
+  badge?: string
+  badgeBg?: string
+  badgeColor?: string
+}
 
 interface Props {
-  event: CarnivalEvent
+  event: EventProp
 }
 
 export default function EventCard({ event }: Props) {
+  // Build facts from Sanity fields if legacy facts array is missing
+  const facts: string[] = event.facts ?? [
+    event.day,
+    event.venue,
+  ].filter(Boolean) as string[]
+
+  const badge = event.badge ?? event.tag ?? ''
+  const badgeBg = event.badgeBg ?? '#F47B20'
+  const badgeColor = event.badgeColor ?? '#fff'
+
   return (
     <div style={s.card}>
-      <img
-        src={getImageUrl(event.image)}
-        alt={event.title}
-        style={s.img}
-      />
+      {event.image && (
+        <img
+          src={event.image}
+          alt={event.title}
+          style={s.img}
+        />
+      )}
       <div style={s.overlay} />
-      <span style={{ ...s.badge, background: event.badgeBg, color: event.badgeColor }}>
-        {event.badge}
+      <span style={{ ...s.badge, background: badgeBg, color: badgeColor }}>
+        {badge}
       </span>
       <div style={s.body}>
         <h3 style={s.title}>{event.title}</h3>
         <ul style={s.facts}>
-          {event.facts.map(f => (
+          {facts.map(f => (
             <li key={f} style={s.fact}>
               <span style={s.dash}>—</span> {f}
             </li>

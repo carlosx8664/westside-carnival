@@ -1,8 +1,36 @@
+import { useEffect, useState } from 'react'
 import SectionHeader from '@/components/SectionHeader'
-import { stats, sponsors } from '@/data/events'
-import { getImageUrl } from '@/lib/utils'
+import { client, urlFor } from '@/lib/sanityClient'
+import { ABOUT_QUERY, SITE_SETTINGS_QUERY } from '@/lib/queries'
+import { PortableText } from '@portabletext/react'
+
+const statColors = ['#F47B20', '#29C5C5', '#4DC44A', '#FFD700']
 
 export default function About() {
+  const [about, setAbout] = useState<any>(null)
+  const [settings, setSettings] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    Promise.all([
+      client.fetch(ABOUT_QUERY),
+      client.fetch(SITE_SETTINGS_QUERY),
+    ]).then(([a, s]) => {
+      setAbout(a)
+      setSettings(s)
+      setLoading(false)
+    }).catch(() => setLoading(false))
+  }, [])
+
+  if (loading) return (
+    <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <p style={{ color: '#6B5A40', letterSpacing: '0.2em', fontSize: '0.8rem' }}>LOADING...</p>
+    </div>
+  )
+
+  const sponsors = settings?.sponsors ?? []
+  const stats = about?.stats ?? []
+
   return (
     <>
       <div className="page-spacer" />
@@ -11,60 +39,71 @@ export default function About() {
       <section style={{ background: '#FFF5E8', padding: '5rem 2rem' }}>
         <div style={s.grid}>
           <div style={s.imgWrap}>
-            <img src={getImageUrl('dancers')} alt="Westside Carnival masqueraders" style={s.img} />
+            {about?.image && (
+              <img
+                src={urlFor(about.image).width(900).url()}
+                alt="Westside Carnival masqueraders"
+                style={s.img}
+              />
+            )}
           </div>
           <div>
-            <span style={s.kicker}>Est. 20+ Years · Takoradi</span>
-            <h2 style={s.title}>More Than<br />a <em style={{ fontStyle: 'normal', color: '#F47B20' }}>Carnival</em></h2>
+            {about?.kicker && <span style={s.kicker}>{about.kicker}</span>}
+            {about?.heading && (
+              <h2 style={s.title}>
+                {about.heading}<br />
+                {about?.headingAccent && (
+                  <em style={{ fontStyle: 'normal', color: '#F47B20' }}>
+                    {about.headingAccent}
+                  </em>
+                )}
+              </h2>
+            )}
             <hr style={s.rule} />
-            <p style={s.body}>
-              The Westside Carnival — also known as the Ankos or Fancy Dress Carnival — is Takoradi's annual
-              Christmas street festival. Held every December 24–26, it draws over 250,000 attendees to Market
-              Circle and Liberation Road in the Central Business District.
-            </p>
-            <p style={{ ...s.body, marginTop: '1rem' }}>
-              Featuring masquerade troupes in vibrant multicoloured costumes, brass bands playing highlife,
-              acrobatic performances, and samba processions — it is the beating heart of the Western Region.
-              Organised by Skyy Media Group and Skyy Power FM, with MTN as headline sponsor.
-            </p>
-            <p style={{ ...s.body, marginTop: '1rem' }}>
-              Our hospitality team ensures every out-of-town guest stays comfortably and celebrates fully.
-            </p>
+            {about?.body && (
+              <div style={s.body}>
+                <PortableText value={about.body} />
+              </div>
+            )}
           </div>
         </div>
       </section>
 
       {/* Stats */}
-      <section style={{ background: '#1A1008', padding: '4.5rem 2rem' }}>
-        <div className="sw">
-          <SectionHeader kicker="By the Numbers" title={<>The Scale of <em>Westside</em></>} light />
-        </div>
-        <div style={s.statsRow}>
-          {stats.map((stat, i) => (
-            <div key={stat.label} style={s.statCell}>
-              <div style={{ ...s.statNum, color: ['#F47B20', '#29C5C5', '#4DC44A', '#FFD700'][i] }}>
-                {stat.num}
+      {stats.length > 0 && (
+        <section style={{ background: '#1A1008', padding: '4.5rem 2rem' }}>
+          <div className="sw">
+            <SectionHeader kicker="By the Numbers" title={<>The Scale of <em>Westside</em></>} light />
+          </div>
+          <div style={s.statsRow}>
+            {stats.map((stat: any, i: number) => (
+              <div key={stat.label} style={s.statCell}>
+                <div style={{ ...s.statNum, color: statColors[i % statColors.length] }}>
+                  {stat.value}
+                </div>
+                <div style={s.statLabel}>{stat.label}</div>
               </div>
-              <div style={s.statLabel}>{stat.label}</div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Sponsors */}
-      <section style={{ background: '#fff', padding: '5rem 2rem' }}>
-        <div className="sw">
-          <SectionHeader kicker="Partners & Sponsors" title={<>Proudly <em>Supported By</em></>} />
-          <div style={s.sponsorsGrid}>
-            {sponsors.map(sp => (
-              <div key={sp} style={s.sponsorChip}>{sp}</div>
             ))}
           </div>
-          <p style={s.organiser}>
-            Westside Carnival is a <strong>Skyy Media Group</strong> event, organised by <strong>Skyy Power FM</strong>.
-          </p>
-        </div>
-      </section>
+        </section>
+      )}
+
+      {/* Sponsors */}
+      {sponsors.length > 0 && (
+        <section style={{ background: '#fff', padding: '5rem 2rem' }}>
+          <div className="sw">
+            <SectionHeader kicker="Partners & Sponsors" title={<>Proudly <em>Supported By</em></>} />
+            <div style={s.sponsorsGrid}>
+              {sponsors.map((sp: string) => (
+                <div key={sp} style={s.sponsorChip}>{sp}</div>
+              ))}
+            </div>
+            <p style={s.organiser}>
+              Westside Carnival is a <strong>Skyy Media Group</strong> event, organised by <strong>Skyy Power FM</strong>.
+            </p>
+          </div>
+        </section>
+      )}
     </>
   )
 }

@@ -1,6 +1,24 @@
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { client } from '@/lib/sanityClient'
+import { SITE_SETTINGS_QUERY, PACKAGES_QUERY } from '@/lib/queries'
 
 export default function Footer() {
+  const [waNumber, setWaNumber] = useState('233000000000')
+  const [location, setLocation] = useState('Liberation Road, Takoradi')
+  const [packages, setPackages] = useState<any[]>([])
+
+  useEffect(() => {
+    Promise.all([
+      client.fetch(SITE_SETTINGS_QUERY),
+      client.fetch(PACKAGES_QUERY),
+    ]).then(([s, pkgs]) => {
+      if (s?.whatsappNumber) setWaNumber(s.whatsappNumber)
+      if (s?.eventLocation) setLocation(s.eventLocation)
+      setPackages(pkgs)
+    })
+  }, [])
+
   return (
     <footer style={s.footer}>
       <div className="stripe-bar" />
@@ -9,7 +27,7 @@ export default function Footer() {
           <p style={s.brand}>Westside Carnival</p>
           <p style={s.tagline}>
             Official Hospitality &amp; Accommodation<br />
-            Liberation Road, Takoradi<br />
+            {location}<br />
             Western Region, Ghana
           </p>
         </div>
@@ -24,22 +42,33 @@ export default function Footer() {
         <div style={s.col}>
           <p style={s.colTitle}>Accommodation</p>
           <ul style={s.list}>
-            <li><Link to="/accommodation" style={s.link}>Standard Stay</Link></li>
-            <li><Link to="/accommodation" style={s.link}>Carnival Classic</Link></li>
-            <li><Link to="/accommodation" style={s.link}>VIP Experience</Link></li>
-            <li><Link to="/booking"       style={s.link}>How to Book</Link></li>
+            {packages.length > 0
+              ? packages.map(pkg => (
+                  <li key={pkg._id}>
+                    <Link to="/accommodation" style={s.link}>{pkg.name}</Link>
+                  </li>
+                ))
+              : (
+                <>
+                  <li><Link to="/accommodation" style={s.link}>Standard Stay</Link></li>
+                  <li><Link to="/accommodation" style={s.link}>Carnival Classic</Link></li>
+                  <li><Link to="/accommodation" style={s.link}>VIP Experience</Link></li>
+                </>
+              )
+            }
+            <li><Link to="/booking" style={s.link}>How to Book</Link></li>
           </ul>
         </div>
         <div style={s.col}>
           <p style={s.colTitle}>Contact</p>
           <ul style={s.list}>
             <li>
-              <a href="https://wa.me/233000000000" target="_blank" rel="noreferrer" style={s.link}>
+              <a href={`https://wa.me/${waNumber}`} target="_blank" rel="noreferrer" style={s.link}>
                 WhatsApp
               </a>
             </li>
             <li>
-              <a href="tel:+233000000000" style={s.link}>+233 000 000 000</a>
+              <a href={`tel:+${waNumber}`} style={s.link}>+{waNumber}</a>
             </li>
             <li><Link to="/contact" style={s.link}>Send Enquiry</Link></li>
           </ul>

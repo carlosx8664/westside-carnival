@@ -1,9 +1,22 @@
-import { buildWaLink } from '@/lib/utils'
+import { useEffect, useState } from 'react'
+import { client } from '@/lib/sanityClient'
+import { SITE_SETTINGS_QUERY } from '@/lib/queries'
 
 export default function WaFab() {
+  const [waNumber, setWaNumber] = useState('233000000000')
+
+  useEffect(() => {
+    client.fetch(SITE_SETTINGS_QUERY).then(data => {
+      if (data?.whatsappNumber) setWaNumber(data.whatsappNumber)
+    })
+  }, [])
+
+  const message = encodeURIComponent("Hello! I'd like to book accommodation for Westside Carnival.")
+  const href = `https://wa.me/${waNumber}?text=${message}`
+
   return (
     <a
-      href={buildWaLink("Hello! I'd like to book accommodation for Westside Carnival.")}
+      href={href}
       target="_blank"
       rel="noreferrer"
       style={s.fab}

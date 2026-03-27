@@ -1,9 +1,20 @@
+import { useEffect, useState } from 'react'
 import EventCard from '@/components/EventCard'
 import CtaBand from '@/components/CtaBand'
 import SectionHeader from '@/components/SectionHeader'
-import { carnivalEvents } from '@/data/events'
+import { client, urlFor } from '@/lib/sanityClient'
+import { EVENTS_QUERY } from '@/lib/queries'
 
 export default function Events() {
+  const [events, setEvents] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    client.fetch(EVENTS_QUERY)
+      .then(data => { setEvents(data); setLoading(false) })
+      .catch(() => setLoading(false))
+  }, [])
+
   return (
     <>
       <div className="page-spacer" />
@@ -16,9 +27,29 @@ export default function Events() {
             sub="From the Kids Party to the Grand Masqueraders Parade — three days of non-stop celebration in Takoradi."
           />
         </div>
-        <div style={s.grid}>
-          {carnivalEvents.map(ev => <EventCard key={ev.id} event={ev} />)}
-        </div>
+
+        {loading ? (
+          <div style={{ textAlign: 'center', padding: '3rem', color: '#888' }}>
+            Loading events...
+          </div>
+        ) : (
+          <div style={s.grid}>
+            {events.map(ev => (
+              <EventCard
+                key={ev._id}
+                event={{
+                  id: ev._id,
+                  title: ev.title,
+                  day: ev.day,
+                  venue: ev.venue,
+                  description: ev.description,
+                  tag: ev.tag,
+                  image: ev.image ? urlFor(ev.image).width(600).url() : '',
+                }}
+              />
+            ))}
+          </div>
+        )}
       </section>
 
       {/* Schedule table */}
@@ -26,16 +57,20 @@ export default function Events() {
         <div className="sw">
           <SectionHeader kicker="Programme" title={<>Event <em>Schedule</em></>} alignLeft />
           <div style={s.schedule}>
-            {carnivalEvents.map(ev => (
-              <div key={ev.id} style={s.scheduleRow}>
+            {events.map(ev => (
+              <div key={ev._id} style={s.scheduleRow}>
                 <div style={s.scheduleDay}>{ev.day}</div>
                 <div style={s.scheduleInfo}>
                   <h4 style={s.scheduleTitle}>{ev.title}</h4>
                   <p style={s.scheduleVenue}>📍 {ev.venue}</p>
                   <p style={s.scheduleDesc}>{ev.description}</p>
                 </div>
-                <div style={{ ...s.scheduleBadge, background: ev.badgeBg, color: ev.badgeColor }}>
-                  {ev.badge}
+                <div style={{
+                  ...s.scheduleBadge,
+                  background: ev.badgeBg ?? '#F47B20',
+                  color: ev.badgeColor ?? '#fff'
+                }}>
+                  {ev.tag}
                 </div>
               </div>
             ))}

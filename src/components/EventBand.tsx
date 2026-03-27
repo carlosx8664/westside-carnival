@@ -1,9 +1,23 @@
+import { useEffect, useState } from 'react'
+import { client } from '@/lib/sanityClient'
+import { SITE_SETTINGS_QUERY } from '@/lib/queries'
+
 export default function EventBand() {
+  const [settings, setSettings] = useState<any>(null)
+
+  useEffect(() => {
+    client.fetch(SITE_SETTINGS_QUERY).then(setSettings)
+  }, [])
+
+  const location = settings?.eventLocation ?? 'Market Circle, Liberation Road, Takoradi'
+  const sponsors = settings?.sponsors ?? ['MTN']
+  const mainSponsor = sponsors[0] ?? 'MTN'
+
   const items = [
-    { icon: '📅', text: '24th – 26th December 2026', bold: true },
-    { icon: '📍', text: 'Market Circle, Liberation Road, Takoradi', bold: true },
-    { icon: '🎪', text: 'Free Entry', bold: true },
-    { icon: '🏨', text: 'Official Accommodation Available', bold: true },
+    { icon: '📅', text: '24th – 26th December 2026' },
+    { icon: '📍', text: location },
+    { icon: '🎪', text: 'Free Entry' },
+    { icon: '🏨', text: 'Official Accommodation Available' },
   ]
 
   return (
@@ -13,7 +27,7 @@ export default function EventBand() {
         <span style={s.orgVal}>Skyy Media Group · Skyy Power FM</span>
         <span style={s.sep}>|</span>
         <span style={s.orgLabel}>Main Sponsor</span>
-        <span style={{ ...s.orgVal, color: '#FFD700' }}>MTN</span>
+        <span style={{ ...s.orgVal, color: '#FFD700' }}>{mainSponsor}</span>
       </div>
       <div style={s.band}>
         {items.map((item, i) => (

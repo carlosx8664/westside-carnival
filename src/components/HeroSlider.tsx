@@ -1,104 +1,131 @@
+import { useEffect, useState } from 'react'
 import { useSlider } from '@/hooks/useSlider'
-import { getImageUrl } from '@/lib/utils'
+import { client, urlFor } from '@/lib/sanityClient'
+import { HERO_SLIDES_QUERY } from '@/lib/queries'
 import { Link } from 'react-router-dom'
 
-interface Slide {
-  image: string
-  badge: string
-  title: React.ReactNode
-  sub: string
-  cta1: { label: string; to: string }
-  cta2: { label: string; to: string }
-  objectPosition?: string
+const overlayMap: Record<string, string> = {
+  none:   'none',
+  light:  'linear-gradient(110deg, rgba(26,16,8,0.35) 0%, rgba(26,16,8,0.05) 60%, rgba(26,16,8,0.0) 100%)',
+  medium: 'linear-gradient(110deg, rgba(26,16,8,0.55) 0%, rgba(26,16,8,0.20) 60%, rgba(26,16,8,0.0) 100%)',
+  dark:   'linear-gradient(110deg, rgba(26,16,8,0.82) 0%, rgba(26,16,8,0.50) 60%, rgba(26,16,8,0.1) 100%)',
 }
 
-const slides: Slide[] = [
-  {
-    image: 'group',
-    badge: 'Takoradi, Ghana · Est. 20+ Years',
-    title: (
-      <>
-        <span style={{ color: '#F47B20' }}>West</span>
-        <span style={{ color: '#FFD700' }}>side</span>
-        <br />
-        <span style={{ color: '#29C5C5' }}>Car</span>
-        <span style={{ color: '#4DC44A' }}>ni</span>
-        <span style={{ color: '#F47B20' }}>val</span>
-        <br />
-        <span style={{ color: '#fff' }}>2026</span>
-      </>
-    ),
-    sub: "Ghana's most beloved annual street festival — masquerades, brass bands & 250,000 revellers every Christmas.",
-    cta1: { label: 'Book Accommodation', to: '/accommodation' },
-    cta2: { label: 'Explore Events', to: '/events' },
-    objectPosition: 'center',
-  },
-  {
-    image: 'drums',
-    badge: 'Christmas Night · Liberation Road',
-    title: (
-      <>
-        Let the<br />
-        <span style={{ color: '#FFD700' }}>Drums</span>
-        <br />
-        Take Over
-      </>
-    ),
-    sub: "From dusk to dawn, Takoradi's streets come alive with music, fairy lights, and 250,000 dancing souls.",
-    cta1: { label: 'How to Book', to: '/booking' },
-    cta2: { label: 'View Gallery', to: '/gallery' },
-    objectPosition: 'center',
-  },
-  {
-    image: 'dancers',
-    badge: 'Fancy Dress · Masquerade',
-    title: (
-      <>
-        <span style={{ color: '#FFD700' }}>Colour,</span>
-        <br />
-        <span style={{ color: '#29C5C5' }}>Culture</span>
-        <br />
-        <span style={{ color: '#F47B20' }}>&amp; Costume</span>
-      </>
-    ),
-    sub: 'Five masquerade groups compete in the Ankos Fancy Dress tradition — the beating heart of Westside Carnival.',
-    cta1: { label: 'Explore the Carnival', to: '/events' },
-    cta2: { label: 'Book Your Stay', to: '/accommodation' },
-    objectPosition: 'top',
-  },
-]
-
 export default function HeroSlider() {
-  const { current, next, prev, goTo } = useSlider(slides.length)
+  const [slides, setSlides] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+  const { current, next, prev, goTo } = useSlider(slides.length || 1)
+
+  useEffect(() => {
+    client.fetch(HERO_SLIDES_QUERY)
+      .then(data => { setSlides(data); setLoading(false) })
+      .catch(() => setLoading(false))
+  }, [])
+
+  if (loading) {
+    return (
+      <section style={{ ...s.hero, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <p style={{ color: '#fff', letterSpacing: '0.2em', fontSize: '0.8rem' }}>LOADING...</p>
+      </section>
+    )
+  }
 
   return (
     <section style={s.hero}>
-      {slides.map((slide, i) => (
-        <div
-          key={i}
-          style={{
-            ...s.slide,
-            opacity: i === current ? 1 : 0,
-            pointerEvents: i === current ? 'auto' : 'none',
-          }}
-        >
-          <img
-            src={getImageUrl(slide.image)}
-            alt={`Slide ${i + 1}`}
-            style={{ ...s.slideBg, objectPosition: slide.objectPosition ?? 'center' }}
-          />
-          <div style={s.overlay} />
-          <div style={s.content}>
-            <span style={s.badge}>{slide.badge}</span>
-            <h1 style={s.h1}>{slide.title}</h1>
-            <p style={s.sub}>{slide.sub}</p>
-            <div style={s.btns}>
-              <Link to={slide.cta1.to} className="btn-orange">{slide.cta1.label}</Link>
-              <Link to={slide.cta2.to} className="btn-teal" style={{ marginLeft: '0.6rem' }}>{slide.cta2.label}</Link>
-            </div>
+      {slides.map((slide, i) => {
+        const isActive = i === current
+        const overlay = overlayMap[slide.overlayColor ?? 'light']
+        const objPos = slide.objectPosition ?? 'center'
+
+        return (
+          <div
+            key={slide._id}
+            style={{
+              ...s.slide,
+              opacity: isActive ? 1 : 0,
+              pointerEvents: isActive ? 'auto' : 'none',
+            }}
+          >
+            {/* ── Video background ── */}
+            {slide.slideType === 'video' && slide.videoUrl && (
+              <video
+                src={slide.videoUrl}
+                style={s.slideBgVideo}
+                autoPlay
+                muted
+                loop
+                playsInline
+              />
+            )}
+
+            {/* ── Image / PNG background ── */}
+            {slide.slideType !== 'video' && slide.image && (
+              <img
+                src={urlFor(slide.image).width(1800).url()}
+                alt={slide.titleLine1}
+                style={{ ...s.slideBg, objectPosition: objPos }}
+              />
+            )}
+
+            {/* ── Dark overlay ── */}
+            {overlay !== 'none' && (
+              <div style={{ ...s.overlay, background: overlay }} />
+            )}
+
+            {/* ── PNG overlay (logo / text art) ── */}
+            {slide.overlayImage && (
+              <div style={s.overlayImgWrap}>
+                <img
+                  src={urlFor(slide.overlayImage).width(1400).url()}
+                  alt="Westside Carnival"
+                  style={s.overlayImg}
+                />
+              </div>
+            )}
+
+            {/* ── Text content ── */}
+            {!slide.hideText && (
+              <div style={s.content}>
+                {slide.badge && <span style={s.badge}>{slide.badge}</span>}
+                <h1 style={s.h1}>
+                  {slide.titleLine1}
+                  {slide.titleLine2 && <><br />{slide.titleLine2}</>}
+                  {slide.titleLine3 && <><br />{slide.titleLine3}</>}
+                </h1>
+                {slide.subtitle && <p style={s.sub}>{slide.subtitle}</p>}
+                <div style={s.btns}>
+                  {slide.cta1Label && (
+                    <Link to={slide.cta1Link ?? '/accommodation'} className="btn-orange">
+                      {slide.cta1Label}
+                    </Link>
+                  )}
+                  {slide.cta2Label && (
+                    <Link to={slide.cta2Link ?? '/events'} className="btn-teal">
+                      {slide.cta2Label}
+                    </Link>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* ── CTAs only (when text is hidden) ── */}
+            {slide.hideText && (slide.cta1Label || slide.cta2Label) && (
+              <div style={s.ctaOnly}>
+                {slide.cta1Label && (
+                  <Link to={slide.cta1Link ?? '/accommodation'} className="btn-orange">
+                    {slide.cta1Label}
+                  </Link>
+                )}
+                {slide.cta2Label && (
+                  <Link to={slide.cta2Link ?? '/events'} className="btn-teal">
+                    {slide.cta2Label}
+                  </Link>
+                )}
+              </div>
+            )}
           </div>
-        </div>
-      ))}
+        )
+      })}
 
       <button style={{ ...s.arrow, left: '1.5rem' }} onClick={prev}>&#8592;</button>
       <button style={{ ...s.arrow, right: '1.5rem' }} onClick={next}>&#8594;</button>
@@ -121,26 +148,58 @@ const s: Record<string, React.CSSProperties> = {
     position: 'relative',
     height: '100vh',
     minHeight: 580,
-    paddingTop: 'calc(5px + 52px + 44px)',
     overflow: 'hidden',
     background: '#1A1008',
   },
   slide: {
-    position: 'absolute', inset: 0,
-    display: 'flex', alignItems: 'center',
+    position: 'absolute',
+    top: '52px',
+    left: 0, right: 0, bottom: 0,
+    display: 'flex',
+    alignItems: 'flex-end',
     transition: 'opacity 1s ease',
+  },
+  slideBgVideo: {
+    position: 'absolute', inset: 0,
+    width: '100%', height: '100%',
+    objectFit: 'cover',          // fills the frame cleanly
+    objectPosition: 'center',
   },
   slideBg: {
     position: 'absolute', inset: 0,
-    width: '100%', height: '100%', objectFit: 'cover',
+    width: '100%', height: '100%',
+    objectFit: 'cover',
+    objectPosition: 'center',
   },
   overlay: {
     position: 'absolute', inset: 0,
-    background: 'linear-gradient(110deg, rgba(26,16,8,0.82) 0%, rgba(26,16,8,0.5) 55%, rgba(26,16,8,0.1) 100%)',
+  },
+  overlayImgWrap: {
+    position: 'absolute', inset: 0,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 3,
+    padding: '1rem',
+  },
+  overlayImg: {
+    width: '65%',               // bigger — was maxWidth 80%, now fixed 65vw equivalent
+    maxWidth: 860,              // cap on large screens
+    minWidth: 280,              // readable on mobile
+    objectFit: 'contain',
+    filter: 'drop-shadow(0 6px 40px rgba(0,0,0,0.6))',
   },
   content: {
     position: 'relative', zIndex: 2,
-    maxWidth: 680, padding: '0 4rem',
+    maxWidth: 680,
+    padding: '0 4rem 4rem',
+  },
+  ctaOnly: {
+    position: 'relative', zIndex: 4,
+    width: '100%',
+    display: 'flex', justifyContent: 'center',
+    gap: '1rem', flexWrap: 'wrap',
+    padding: '0 2rem 3rem',
   },
   badge: {
     display: 'inline-block',

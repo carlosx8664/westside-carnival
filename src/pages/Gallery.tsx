@@ -1,8 +1,28 @@
+import { useEffect, useState } from 'react'
 import SectionHeader from '@/components/SectionHeader'
-import { galleryImages } from '@/data/events'
-import { getImageUrl } from '@/lib/utils'
+import { client, urlFor } from '@/lib/sanityClient'
+import { GALLERY_QUERY, SITE_SETTINGS_QUERY } from '@/lib/queries'
 
 export default function Gallery() {
+  const [images, setImages] = useState<any[]>([])
+  const [settings, setSettings] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    Promise.all([
+      client.fetch(GALLERY_QUERY),
+      client.fetch(SITE_SETTINGS_QUERY),
+    ]).then(([imgs, s]) => {
+      setImages(imgs)
+      setSettings(s)
+      setLoading(false)
+    }).catch(() => setLoading(false))
+  }, [])
+
+  const heroImage = images[0]
+  const restImages = images.slice(1)
+  const waNumber = settings?.whatsappNumber ?? '233000000000'
+
   return (
     <>
       <div className="page-spacer" />
@@ -16,30 +36,40 @@ export default function Gallery() {
           />
         </div>
 
-        {/* Hero image */}
-        <div style={s.heroImg}>
-          <img
-            src={getImageUrl('parade')}
-            alt="Masqueraders Parade"
-            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-          />
-          <div style={s.heroOverlay}>
-            <h2 style={s.heroText}>Masquerades, Music &amp; Fun</h2>
+        {loading ? (
+          <div style={{ textAlign: 'center', padding: '3rem', color: '#888' }}>
+            Loading gallery...
           </div>
-        </div>
+        ) : (
+          <>
+            {/* Hero image */}
+            {heroImage && (
+              <div style={s.heroImg}>
+                <img
+                  src={urlFor(heroImage.image).width(1400).url()}
+                  alt={heroImage.title ?? 'Masqueraders Parade'}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                />
+                <div style={s.heroOverlay}>
+                  <h2 style={s.heroText}>Masquerades, Music &amp; Fun</h2>
+                </div>
+              </div>
+            )}
 
-        {/* Grid */}
-        <div style={s.grid}>
-          {galleryImages.slice(1).map(img => (
-            <div key={img.src} style={s.cell}>
-              <img
-                src={getImageUrl(img.src)}
-                alt={img.alt}
-                style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-              />
+            {/* Grid */}
+            <div style={s.grid}>
+              {restImages.map(img => (
+                <div key={img._id} style={s.cell}>
+                  <img
+                    src={urlFor(img.image).width(600).url()}
+                    alt={img.title ?? 'Westside Carnival'}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                  />
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
+          </>
+        )}
 
         <p style={s.footer}>
           → Send us your carnival photos and videos to be featured here — contact us on WhatsApp!
@@ -53,7 +83,7 @@ export default function Gallery() {
           Share your photos and videos with us and we'll feature the best ones right here.
         </p>
         <a
-          href="https://wa.me/233000000000?text=Hi!%20I'd%20like%20to%20share%20my%20Westside%20Carnival%20photos."
+          href={`https://wa.me/${waNumber}?text=Hi!%20I'd%20like%20to%20share%20my%20Westside%20Carnival%20photos.`}
           target="_blank"
           rel="noreferrer"
           className="btn-orange"

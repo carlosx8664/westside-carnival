@@ -1,6 +1,6 @@
-import { useState } from 'react'
-import { buildWaLink, } from '@/lib/utils'
-import { WHATSAPP_NUMBER } from '@/data/events'
+import { useState, useEffect } from 'react'
+import { client } from '@/lib/sanityClient'
+import { SITE_SETTINGS_QUERY, PACKAGES_QUERY } from '@/lib/queries'
 
 interface FormData {
   name: string
@@ -18,6 +18,18 @@ const initialForm: FormData = {
 
 export default function Contact() {
   const [form, setForm] = useState<FormData>(initialForm)
+  const [waNumber, setWaNumber] = useState('233000000000')
+  const [packages, setPackages] = useState<any[]>([])
+
+  useEffect(() => {
+    Promise.all([
+      client.fetch(SITE_SETTINGS_QUERY),
+      client.fetch(PACKAGES_QUERY),
+    ]).then(([s, pkgs]) => {
+      if (s?.whatsappNumber) setWaNumber(s.whatsappNumber)
+      setPackages(pkgs)
+    })
+  }, [])
 
   const update = (field: keyof FormData) => (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
@@ -32,8 +44,10 @@ export default function Contact() {
     msg += `*Check-out:* ${form.checkOut || 'TBD'}\n`
     msg += `*Guests:* ${form.guests}`
     if (form.notes) msg += `\n*Notes:* ${form.notes}`
-    window.open(buildWaLink(msg), '_blank')
+    window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(msg)}`, '_blank')
   }
+
+  const waHref = `https://wa.me/${waNumber}?text=${encodeURIComponent("Hello! I'd like to book accommodation for Westside Carnival.")}`
 
   return (
     <>
@@ -52,12 +66,7 @@ export default function Contact() {
             </p>
 
             <div style={{ marginTop: '2rem' }}>
-              <a
-                href={buildWaLink("Hello! I'd like to book accommodation for Westside Carnival.")}
-                target="_blank"
-                rel="noreferrer"
-                style={s.channel}
-              >
+              <a href={waHref} target="_blank" rel="noreferrer" style={s.channel}>
                 <div style={{ ...s.chDot, background: '#25D366' }}>📱</div>
                 <div>
                   <p style={s.chLbl}>WhatsApp — fastest response</p>
@@ -65,11 +74,11 @@ export default function Contact() {
                 </div>
               </a>
 
-              <a href={`tel:+${WHATSAPP_NUMBER}`} style={s.channel}>
+              <a href={`tel:+${waNumber}`} style={s.channel}>
                 <div style={{ ...s.chDot, background: '#F47B20' }}>📞</div>
                 <div>
                   <p style={s.chLbl}>Phone</p>
-                  <p style={s.chVal}>+233 000 000 000</p>
+                  <p style={s.chVal}>+{waNumber}</p>
                 </div>
               </a>
 
@@ -95,9 +104,18 @@ export default function Contact() {
             <Field label="Preferred Package">
               <select value={form.pkg} onChange={update('pkg')} style={s.input}>
                 <option value="">Select a package</option>
-                <option>Standard Stay (Guest House)</option>
-                <option>Carnival Classic (Hotel)</option>
-                <option>VIP Experience (Premium Hotel)</option>
+                {packages.length > 0
+                  ? packages.map(pkg => (
+                      <option key={pkg._id} value={pkg.name}>{pkg.name}</option>
+                    ))
+                  : (
+                    <>
+                      <option>Standard Stay (Guest House)</option>
+                      <option>Carnival Classic (Hotel)</option>
+                      <option>VIP Experience (Premium Hotel)</option>
+                    </>
+                  )
+                }
                 <option>Not sure — need advice</option>
               </select>
             </Field>
@@ -113,7 +131,7 @@ export default function Contact() {
 
             <Field label="Number of Guests">
               <select value={form.guests} onChange={update('guests')} style={s.input}>
-                {['1 guest','2 guests','3 guests','4 guests','5+ guests'].map(g => (
+                {['1 guest', '2 guests', '3 guests', '4 guests', '5+ guests'].map(g => (
                   <option key={g}>{g}</option>
                 ))}
               </select>

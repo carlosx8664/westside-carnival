@@ -1,9 +1,26 @@
+import { useEffect, useState } from 'react'
 import PackageCard from '@/components/PackageCard'
 import CtaBand from '@/components/CtaBand'
 import SectionHeader from '@/components/SectionHeader'
-import { packages } from '@/data/events'
+import { client } from '@/lib/sanityClient'
+import { PACKAGES_QUERY, SITE_SETTINGS_QUERY } from '@/lib/queries'
 
 export default function Accommodation() {
+  const [packages, setPackages] = useState<any[]>([])
+  const [settings, setSettings] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    Promise.all([
+      client.fetch(PACKAGES_QUERY),
+      client.fetch(SITE_SETTINGS_QUERY),
+    ]).then(([pkgs, s]) => {
+      setPackages(pkgs)
+      setSettings(s)
+      setLoading(false)
+    }).catch(() => setLoading(false))
+  }, [])
+
   return (
     <>
       <div className="page-spacer" />
@@ -16,9 +33,30 @@ export default function Accommodation() {
             sub="All packages bookable via WhatsApp. Booking confirmed after payment is verified."
           />
         </div>
-        <div style={s.grid}>
-          {packages.map(pkg => <PackageCard key={pkg.id} pkg={pkg} />)}
-        </div>
+
+        {loading ? (
+          <div style={{ textAlign: 'center', padding: '3rem', color: '#888' }}>
+            Loading packages...
+          </div>
+        ) : (
+          <div style={s.grid}>
+            {packages.map(pkg => (
+              <PackageCard
+                key={pkg._id}
+                pkg={{
+                  id: pkg._id,
+                  name: pkg.name,
+                  tier: pkg.tier,
+                  price: pkg.price,
+                  description: pkg.description,
+                  features: pkg.features ?? [],
+                  featured: pkg.featured ?? false,
+                  whatsapp: settings?.whatsappNumber ?? '233000000000',
+                }}
+              />
+            ))}
+          </div>
+        )}
       </section>
 
       {/* Why book with us */}

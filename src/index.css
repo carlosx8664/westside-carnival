@@ -15,7 +15,7 @@
   --muted:    #6B5A40;
   --light-bg: #FFF5E8;
   --nav-h:    52px;
-  --subnav-h: 44px;
+  --subnav-h: 0px;
 }
 
 html { scroll-behavior: smooth; }
@@ -51,7 +51,7 @@ button { cursor: pointer; font-family: 'Montserrat', sans-serif; }
 
 /* ── Page spacer for fixed nav ── */
 .page-spacer {
-  height: calc(5px + var(--nav-h) + var(--subnav-h));
+  height: var(--nav-h);
 }
 
 /* ── Section shared ── */

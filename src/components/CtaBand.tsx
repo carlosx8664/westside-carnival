@@ -1,7 +1,20 @@
-import { buildWaLink } from '@/lib/utils'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { client } from '@/lib/sanityClient'
+import { SITE_SETTINGS_QUERY } from '@/lib/queries'
 
 export default function CtaBand() {
+  const [waNumber, setWaNumber] = useState('233000000000')
+
+  useEffect(() => {
+    client.fetch(SITE_SETTINGS_QUERY).then(data => {
+      if (data?.whatsappNumber) setWaNumber(data.whatsappNumber)
+    })
+  }, [])
+
+  const message = encodeURIComponent("Hello! I'd like to book accommodation for Westside Carnival.")
+  const href = `https://wa.me/${waNumber}?text=${message}`
+
   return (
     <div style={s.band}>
       <div style={s.content}>
@@ -14,7 +27,7 @@ export default function CtaBand() {
         </p>
         <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
           <a
-            href={buildWaLink("Hello! I'd like to book accommodation for Westside Carnival.")}
+            href={href}
             target="_blank"
             rel="noreferrer"
             className="btn-orange"

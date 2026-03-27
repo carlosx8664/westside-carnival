@@ -1,7 +1,18 @@
+import { useEffect, useState } from 'react'
 import { useCountdown } from '@/hooks/useCountdown'
+import { client } from '@/lib/sanityClient'
+import { SITE_SETTINGS_QUERY } from '@/lib/queries'
 
 export default function CountdownBar() {
-  const { days, hours, minutes, seconds } = useCountdown()
+  const [targetDate, setTargetDate] = useState<string>('2026-12-24T00:00:00')
+
+  useEffect(() => {
+    client.fetch(SITE_SETTINGS_QUERY).then(data => {
+      if (data?.countdownDate) setTargetDate(data.countdownDate)
+    })
+  }, [])
+
+  const { days, hours, minutes, seconds } = useCountdown(targetDate)
 
   return (
     <div style={s.bar}>

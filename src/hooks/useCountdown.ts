@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import { CARNIVAL_DATE } from '@/data/events'
 
 interface CountdownValues {
   days: string
@@ -9,9 +8,10 @@ interface CountdownValues {
   expired: boolean
 }
 
-export function useCountdown(): CountdownValues {
+export function useCountdown(targetDate?: string): CountdownValues {
   const calculate = (): CountdownValues => {
-    const diff = Math.max(0, CARNIVAL_DATE.getTime() - Date.now())
+    const target = targetDate ? new Date(targetDate) : new Date('2026-12-24T00:00:00')
+    const diff = Math.max(0, target.getTime() - Date.now())
     if (diff === 0) return { days: '00', hours: '00', minutes: '00', seconds: '00', expired: true }
     return {
       days:    String(Math.floor(diff / 86400000)).padStart(2, '0'),
@@ -27,7 +27,7 @@ export function useCountdown(): CountdownValues {
   useEffect(() => {
     const id = setInterval(() => setValues(calculate()), 1000)
     return () => clearInterval(id)
-  }, [])
+  }, [targetDate])
 
   return values
 }

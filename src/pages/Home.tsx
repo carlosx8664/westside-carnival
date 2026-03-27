@@ -1,13 +1,24 @@
+import { useEffect, useState } from 'react'
 import HeroSlider from '@/components/HeroSlider'
 import CountdownBar from '@/components/CountdownBar'
 import EventBand from '@/components/EventBand'
 import EventCard from '@/components/EventCard'
 import CtaBand from '@/components/CtaBand'
 import SectionHeader from '@/components/SectionHeader'
-import { carnivalEvents } from '@/data/events'
 import { Link } from 'react-router-dom'
+import { client, urlFor } from '@/lib/sanityClient'
+import { EVENTS_QUERY } from '@/lib/queries'
 
 export default function Home() {
+  const [events, setEvents] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    client.fetch(EVENTS_QUERY)
+      .then(data => { setEvents(data); setLoading(false) })
+      .catch(() => setLoading(false))
+  }, [])
+
   return (
     <>
       <HeroSlider />
@@ -23,9 +34,30 @@ export default function Home() {
             title={<>What Awaits <em>You</em></>}
           />
         </div>
-        <div style={s.grid}>
-          {carnivalEvents.map(ev => <EventCard key={ev.id} event={ev} />)}
-        </div>
+
+        {loading ? (
+          <div style={{ textAlign: 'center', padding: '3rem', color: '#888' }}>
+            Loading events...
+          </div>
+        ) : (
+          <div style={s.grid}>
+            {events.map(ev => (
+              <EventCard
+                key={ev._id}
+                event={{
+                  id: ev._id,
+                  title: ev.title,
+                  day: ev.day,
+                  venue: ev.venue,
+                  description: ev.description,
+                  tag: ev.tag,
+                  image: ev.image ? urlFor(ev.image).width(600).url() : '',
+                }}
+              />
+            ))}
+          </div>
+        )}
+
         <div style={{ textAlign: 'center', marginTop: '2rem' }}>
           <Link to="/events" className="btn-orange">See All Events</Link>
         </div>

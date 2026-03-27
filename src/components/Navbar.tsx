@@ -1,32 +1,40 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { buildWaLink } from '@/lib/utils'
+import { client } from '@/lib/sanityClient'
+import { SITE_SETTINGS_QUERY } from '@/lib/queries'
 
 const navLinks = [
-  { to: '/',                label: 'Home',          id: 'home' },
-  { to: '/events',          label: 'Events',        id: 'events' },
-  { to: '/accommodation',   label: 'Accommodation', id: 'accommodation' },
-  { to: '/booking',         label: 'How to Book',   id: 'booking' },
-  { to: '/gallery',         label: 'Gallery',       id: 'gallery' },
-  { to: '/about',           label: 'About',         id: 'about' },
-  { to: '/contact',         label: 'Contact',       id: 'contact' },
+  { to: '/',              label: 'Home',          id: 'home' },
+  { to: '/events',        label: 'Events',        id: 'events' },
+  { to: '/accommodation', label: 'Accommodation', id: 'accommodation' },
+  { to: '/booking',       label: 'How to Book',   id: 'booking' },
+  { to: '/gallery',       label: 'Gallery',       id: 'gallery' },
+  { to: '/about',         label: 'About',         id: 'about' },
+  { to: '/contact',       label: 'Contact',       id: 'contact' },
 ]
 
 export default function Navbar() {
   const [open, setOpen] = useState(false)
+  const [waNumber, setWaNumber] = useState('233000000000')
   const { pathname } = useLocation()
+
+  useEffect(() => {
+    client.fetch(SITE_SETTINGS_QUERY).then(data => {
+      if (data?.whatsappNumber) setWaNumber(data.whatsappNumber)
+    })
+  }, [])
 
   const isActive = (to: string) =>
     to === '/' ? pathname === '/' : pathname.startsWith(to)
 
+  const message = encodeURIComponent("Hello! I'd like to book accommodation for Westside Carnival.")
+  const waHref = `https://wa.me/${waNumber}?text=${message}`
+
   return (
     <>
       <nav style={styles.nav}>
-        {/* Colour stripe */}
-        <div className="stripe-bar" />
-
-        {/* Top row */}
-        <div style={styles.top}>
+        {/* Single nav bar — logo left, links center, book right */}
+        <div style={styles.bar}>
           <Link to="/" style={styles.logoWrap}>
             <div style={styles.logoMark}>W</div>
             <div style={styles.logoText}>
@@ -35,20 +43,25 @@ export default function Navbar() {
             </div>
           </Link>
 
-          <div style={styles.topRight}>
-            <div style={styles.topLinks}>
-              <Link to="/about"    style={styles.topLink}>About</Link>
-              <Link to="/gallery"  style={styles.topLink}>Gallery</Link>
-              <Link to="/contact"  style={styles.topLink}>Contact</Link>
-              <a
-                href={buildWaLink("Hello! I'd like to book accommodation for Westside Carnival.")}
-                target="_blank"
-                rel="noreferrer"
-                style={styles.bookBtn}
+          <div style={styles.links}>
+            {navLinks.map(link => (
+              <Link
+                key={link.id}
+                to={link.to}
+                style={{
+                  ...styles.link,
+                  ...(isActive(link.to) ? styles.linkActive : {}),
+                }}
               >
-                Book Now
-              </a>
-            </div>
+                {link.label}
+              </Link>
+            ))}
+          </div>
+
+          <div style={styles.right}>
+            <a href={waHref} target="_blank" rel="noreferrer" style={styles.bookBtn}>
+              Book Now
+            </a>
             <button
               style={styles.burger}
               onClick={() => setOpen(o => !o)}
@@ -59,30 +72,6 @@ export default function Navbar() {
               <span style={{ ...styles.burgerLine, ...(open ? styles.burgerLine3Open : {}) }} />
             </button>
           </div>
-        </div>
-
-        {/* Sub nav */}
-        <div style={styles.subNav}>
-          {navLinks.map(link => (
-            <Link
-              key={link.id}
-              to={link.to}
-              style={{
-                ...styles.subLink,
-                ...(isActive(link.to) ? styles.subLinkActive : {}),
-              }}
-            >
-              {link.label}
-            </Link>
-          ))}
-          <a
-            href={buildWaLink("Hello! I'd like to book accommodation for Westside Carnival.")}
-            target="_blank"
-            rel="noreferrer"
-            style={styles.subBook}
-          >
-            Book via WhatsApp
-          </a>
         </div>
       </nav>
 
@@ -100,7 +89,7 @@ export default function Navbar() {
             </Link>
           ))}
           <a
-            href={buildWaLink("Hello! I'd like to book accommodation for Westside Carnival.")}
+            href={waHref}
             target="_blank"
             rel="noreferrer"
             style={styles.drawerCta}
@@ -118,45 +107,52 @@ const styles: Record<string, React.CSSProperties> = {
   nav: {
     position: 'fixed', top: 0, left: 0, right: 0, zIndex: 600,
   },
-  top: {
-    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-    height: 52, padding: '0 2rem',
-    background: '#fff',
-    borderBottom: '1px solid rgba(0,0,0,0.08)',
-    boxShadow: '0 2px 12px rgba(0,0,0,0.06)',
+  bar: {
+    display: 'flex', alignItems: 'stretch',
+    height: 52, background: '#1A1008',
+    borderBottom: '1px solid rgba(255,255,255,0.07)',
+    boxShadow: '0 2px 12px rgba(0,0,0,0.3)',
   },
   logoWrap: {
-    display: 'flex', alignItems: 'center', gap: '0.7rem', textDecoration: 'none',
+    display: 'flex', alignItems: 'center', gap: '0.7rem',
+    textDecoration: 'none', padding: '0 1.5rem',
+    borderRight: '1px solid rgba(255,255,255,0.07)', flexShrink: 0,
   },
   logoMark: {
-    width: 38, height: 38, borderRadius: '50%',
+    width: 32, height: 32, borderRadius: '50%',
     background: '#F47B20', display: 'flex', alignItems: 'center', justifyContent: 'center',
-    fontSize: '1rem', fontWeight: 900, color: '#fff',
-    border: '3px solid #FFD700', flexShrink: 0,
+    fontSize: '0.85rem', fontWeight: 900, color: '#fff',
+    border: '2px solid #FFD700', flexShrink: 0,
   },
   logoText: {
-    fontSize: '1.05rem', fontWeight: 900, letterSpacing: '0.05em',
-    color: '#1A1008', textTransform: 'uppercase', lineHeight: 1.1,
+    fontSize: '0.9rem', fontWeight: 900, letterSpacing: '0.05em',
+    color: '#fff', textTransform: 'uppercase', lineHeight: 1.1,
     display: 'flex', flexDirection: 'column',
   },
   logoSub: {
-    color: '#F47B20', fontSize: '0.65rem', letterSpacing: '0.14em', fontWeight: 600,
+    color: '#F47B20', fontSize: '0.58rem', letterSpacing: '0.14em', fontWeight: 600,
   },
-  topRight: { display: 'flex', alignItems: 'center' },
-  topLinks: {
-    display: 'flex', alignItems: 'center', gap: 0,
+  links: {
+    display: 'flex', alignItems: 'stretch', flex: 1, overflowX: 'auto',
   },
-  topLink: {
-    fontSize: '0.68rem', letterSpacing: '0.1em', textTransform: 'uppercase',
-    color: '#6B5A40', textDecoration: 'none',
-    padding: '0 0.85rem', height: 52, display: 'flex', alignItems: 'center',
+  link: {
+    fontSize: '0.66rem', letterSpacing: '0.12em', textTransform: 'uppercase',
+    color: 'rgba(255,255,255,0.52)', textDecoration: 'none',
+    padding: '0 1.1rem', display: 'flex', alignItems: 'center',
+    whiteSpace: 'nowrap', borderRight: '1px solid rgba(255,255,255,0.07)',
+    transition: 'color 0.15s',
+  },
+  linkActive: { color: '#FFD700', fontWeight: 700 },
+  right: {
+    display: 'flex', alignItems: 'center',
+    marginLeft: 'auto', flexShrink: 0,
   },
   bookBtn: {
-    display: 'flex', alignItems: 'center', height: 52,
-    padding: '0 1.4rem', marginLeft: '0.5rem',
+    display: 'flex', alignItems: 'center', height: '100%',
+    padding: '0 1.4rem',
     background: '#F47B20', color: '#fff',
-    fontSize: '0.68rem', letterSpacing: '0.1em', textTransform: 'uppercase',
-    fontWeight: 700, textDecoration: 'none', borderRadius: 2,
+    fontSize: '0.66rem', letterSpacing: '0.12em', textTransform: 'uppercase',
+    fontWeight: 700, textDecoration: 'none',
   },
   burger: {
     display: 'none', flexDirection: 'column', justifyContent: 'center',
@@ -165,31 +161,13 @@ const styles: Record<string, React.CSSProperties> = {
   },
   burgerLine: {
     display: 'block', width: 20, height: 2,
-    background: '#1A1008', transition: 'transform 0.25s, opacity 0.25s',
+    background: '#fff', transition: 'transform 0.25s, opacity 0.25s',
   },
   burgerLine1Open: { transform: 'translateY(7px) rotate(45deg)' },
   burgerLine2Open: { opacity: 0 },
   burgerLine3Open: { transform: 'translateY(-7px) rotate(-45deg)' },
-  subNav: {
-    height: 44, display: 'flex', alignItems: 'stretch',
-    background: '#1A1008', overflowX: 'auto',
-  },
-  subLink: {
-    fontSize: '0.66rem', letterSpacing: '0.12em', textTransform: 'uppercase',
-    color: 'rgba(255,255,255,0.52)', textDecoration: 'none',
-    padding: '0 1.1rem', display: 'flex', alignItems: 'center',
-    whiteSpace: 'nowrap', borderRight: '1px solid rgba(255,255,255,0.07)',
-  },
-  subLinkActive: { color: '#FFD700', fontWeight: 700 },
-  subBook: {
-    marginLeft: 'auto', background: '#F47B20', color: '#fff',
-    fontWeight: 700, fontSize: '0.66rem', letterSpacing: '0.12em',
-    textTransform: 'uppercase', padding: '0 1.1rem',
-    display: 'flex', alignItems: 'center', textDecoration: 'none',
-    whiteSpace: 'nowrap',
-  },
   drawer: {
-    position: 'fixed', top: 'calc(52px + 44px + 5px)',
+    position: 'fixed', top: 52,
     left: 0, right: 0, zIndex: 599,
     background: '#1A1008', display: 'flex', flexDirection: 'column',
     borderBottom: '3px solid #F47B20',
